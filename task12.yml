@@ -1,0 +1,50 @@
+- hosts: tag_Name_webserver
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: "installation of apache httpd web server"
+      package:
+        name: 
+        - httpd
+        - php
+        state: present
+      
+    - name: "copy content to root document of web server"
+      copy:
+        src: /root/ansible_ws/index.php
+        dest: /var/www/html/
+
+    - name: "starting the httpd server"
+      service:
+        name: httpd
+        state: started
+
+
+- hosts: tag_Name_haproxy_server
+  become: yes
+  remote_user: ec2-user
+  tasks: 
+  - name: "installation of reverse proxy server"
+    package:
+      name: haproxy
+      state: present
+  - name: "starting the server"
+    service:
+      name: haproxy
+      state: started
+
+  - name: "config file setup"
+    template:
+      src: /root/ansible_ws/haproxy.cfg
+      dest: /etc/haproxy/haproxy.cfg
+    notify: "restart"
+  
+  handlers:  
+  - name: "restart"
+    service:
+      name: haproxy
+      state: restarted
+      enabled: yes
+
+ 
+

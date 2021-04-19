@@ -1,0 +1,20 @@
+- hosts: localhost
+  vars_files:
+      - secret.yml
+
+  tasks:
+    - name: "provisioning ec2 instance for Loadbalancer"
+      ec2_instance:
+          region: ap-south-1
+          image_id: ami-0bcf5425cdc1d8a85
+          instance_type: t2.micro
+          wait: yes
+          vpc_subnet_id: subnet-65747d0d
+          security_group: sg-0a51135d200fca472
+          key_name: master
+          name: haproxy_server
+          state: present
+          aws_access_key: "{{access_key}}"
+          aws_secret_key: "{{secret_key}}"
+
+      
